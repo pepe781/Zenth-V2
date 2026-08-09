@@ -18,6 +18,7 @@ export default function ReviewsPage() {
   const [loading, setLoading] = useState(true);
   const [generatingId, setGeneratingId] = useState<string | null>(null);
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [saveError, setSaveError] = useState<string | null>(null);
 
   // Formulario para agregar reseña manual
   const [authorName, setAuthorName] = useState("");
@@ -83,6 +84,7 @@ export default function ReviewsPage() {
 
   async function handleGenerate(review: Review) {
     setGeneratingId(review.id);
+    setSaveError(null);
 
     try {
       const res = await fetch("/api/generate-response", {
@@ -97,6 +99,11 @@ export default function ReviewsPage() {
 
       const data = await res.json();
 
+      if (data.error) {
+        setSaveError(data.error);
+        return;
+      }
+
       if (data.text) {
         setReviews((prev) =>
           prev.map((r) =>
@@ -104,6 +111,8 @@ export default function ReviewsPage() {
           )
         );
       }
+    } catch (err) {
+      setSaveError("No se pudo generar la respuesta. Revisa tu conexión.");
     } finally {
       setGeneratingId(null);
     }
@@ -111,13 +120,22 @@ export default function ReviewsPage() {
 
   async function handleSaveResponse(review: Review) {
     setSavingId(review.id);
+    setSaveError(null);
 
-    await supabase
-      .from("reviews")
-      .update({ ai_response: review.ai_response })
-      .eq("id", review.id);
+    try {
+      const { error } = await supabase
+        .from("reviews")
+        .update({ ai_response: review.ai_response })
+        .eq("id", review.id);
 
-    setSavingId(null);
+      if (error) {
+        setSaveError(`No se pudo guardar: ${error.message}`);
+      }
+    } catch (err) {
+      setSaveError("No se pudo guardar. Revisa tu conexión e intenta de nuevo.");
+    } finally {
+      setSavingId(null);
+    }
   }
 
   function updateLocalResponse(id: string, text: string) {
@@ -195,6 +213,11 @@ export default function ReviewsPage() {
         <p className="text-slate-400">Todavía no hay reseñas.</p>
       ) : (
         <div className="space-y-4">
+          {saveError && (
+            <p className="text-red-400 text-sm bg-red-950/40 border border-red-900 rounded-lg px-3 py-2">
+              {saveError}
+            </p>
+          )}
           {reviews.map((review) => (
             <div
               key={review.id}
