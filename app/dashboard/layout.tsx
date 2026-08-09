@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import type { Session } from "@supabase/supabase-js";
@@ -54,7 +55,21 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-slate-950">
       <header className="border-b border-slate-800 px-6 py-4 flex items-center justify-between">
-        <span className="text-xl font-bold text-white">Zenth</span>
+        <div className="flex items-center gap-6">
+          <span className="text-xl font-bold text-white">Zenth</span>
+          <Link
+            href="/dashboard"
+            className="text-slate-400 text-sm hover:text-white transition-colors"
+          >
+            Panel
+          </Link>
+          <Link
+            href="/dashboard/reviews"
+            className="text-slate-400 text-sm hover:text-white transition-colors"
+          >
+            Reseñas
+          </Link>
+        </div>
         <div className="flex items-center gap-4">
           <span className="text-slate-400 text-sm">{session?.user.email}</span>
           <button
