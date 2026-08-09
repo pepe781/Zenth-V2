@@ -73,7 +73,7 @@ export default function DashboardLayout({
             href="/dashboard/settings"
             className="text-slate-400 text-sm hover:text-white transition-colors"
           >
-            Ajustes
+            Perfil del Negocio
           </Link>
         </div>
         <div className="flex items-center gap-4">
