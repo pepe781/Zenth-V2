@@ -69,6 +69,12 @@ export default function DashboardLayout({
           >
             Reseñas
           </Link>
+          <Link
+            href="/dashboard/settings"
+            className="text-slate-400 text-sm hover:text-white transition-colors"
+          >
+            Ajustes
+          </Link>
         </div>
         <div className="flex items-center gap-4">
           <span className="text-slate-400 text-sm">{session?.user.email}</span>
